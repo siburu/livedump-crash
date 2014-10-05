@@ -168,6 +168,7 @@ memory_source_init(void)
 			return;
 
 		if (!STREQ(pc->live_memsrc, "/dev/mem") &&
+		    !STRNEQ(pc->live_memsrc, "/dev/sd") &&
 		     STREQ(pc->live_memsrc, pc->memory_device)) {
 			if (memory_driver_init())
 				return;
@@ -188,6 +189,11 @@ memory_source_init(void)
 	                                        strerror(errno));
 	                } else
 	                        pc->flags |= MFD_RDWR;
+		} else if (STRNEQ(pc->live_memsrc, "/dev/sd")) {
+	                if ((pc->mfd = open(pc->live_memsrc, O_RDONLY)) < 0)
+				error(FATAL, "%s: %s\n",
+						pc->live_memsrc,
+						strerror(errno));
 		} else if (STREQ(pc->live_memsrc, "/proc/kcore")) {
 			if ((pc->mfd = open("/proc/kcore", O_RDONLY)) < 0)
 				error(FATAL, "/proc/kcore: %s\n", 

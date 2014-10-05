@@ -449,6 +449,19 @@ main(int argc, char **argv)
 				pc->writemem = write_dev_mem;
 				pc->live_memsrc = argv[optind];
 
+			} else if (STRNEQ(argv[optind], "/dev/sd")) {
+				if (pc->flags & MEMORY_SOURCES) {
+					error(INFO,
+					    "too many dumpfile arguments\n");
+					program_usage(SHORT_FORM);
+				}
+				pc->flags |= DEVMEM;
+				pc->dumpfile = NULL;
+				pc->readmem = read_dev_mem;
+				pc->writemem = write_dev_mem;
+				pc->live_memsrc = argv[optind];
+				pc->program_pid = 1;
+
 			} else if (is_proc_kcore(argv[optind], KCORE_LOCAL)) {
 				if (pc->flags & MEMORY_SOURCES) {
 					error(INFO, 
